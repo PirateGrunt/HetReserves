@@ -81,7 +81,7 @@ SAE1 <- sum(abs(yNew - y1))
 SAE2 <- sum(abs(yNew - y2))
 ```
 
-So, our heteroskedastic model performs better! But only just. And, it even performs just a shade worse when we look at the sum of _absolute_ rather than squared errors.
+So, our heteroskedastic model performs worse! But only just. And, it even performs just a shade worse when we look at the sum of _absolute_ rather than squared errors.
 
 ## Variance depends on X
 ## Other parameters have a subscript
