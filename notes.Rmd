@@ -1,0 +1,87 @@
+---
+title: "Untitled"
+author: "Brian A. Fannin"
+date: "03/21/2015"
+output: html_document
+---
+
+## What is heteroskedasticity?
+
+The word "heteroskedasticity" comes from Attic Greek and roughly translates as "different skedasticity". This is contrast to "homoskedasticity", which means "same skedasticity". At this point, you may be wondering what "skedasticity" means. You can hardly be blamed for that.
+
+The truth is, I have no idea what "skedasticity" means, but I assume it's something to do with variance. Homoskedasticity refers to a stochastic process where
+
+## Why bother?
+
+That's a good question. My simple answer is that it's important to check every assumption
+
+```{r }
+set.seed(1234)
+x <- 10:100
+e <- rnorm(length(x), mean=0, sd=x)
+b0 <- 3
+b1 <- 5
+y <- b0 + b1*x + e
+plot(x, y, pch=20)
+```
+
+## Fit the line without heteroskedasticity
+
+```{r }
+fit1 <- lm(y ~ 1 + x)
+```
+
+## Observe the residuals
+
+```{r }
+plot(predict(fit1), fit1$residuals, pch=20)
+```
+
+## Fit the line with heteroskedasticity
+
+```{r }
+fit2 <- lm(y ~ 1 + x, weights=x^(-2))
+plot(predict(fit2), fit2$residuals, pch=20)
+```
+
+Well, that didn't work. Or did it?
+
+```{r }
+plot(fit1$residuals, fit2$residuals, pch=20)
+abline(0,1)
+```
+
+No, it still looks as though it didn't. Why is this? Because sum of squared error or inspection of residual plots will NEVER tell you that a weighted fit is any better. Sum of squared error is particularly troublesome as it would suggest that a heteroskedastic model is actually _worse_ than a model which presumes error terms with normal variance.
+
+The key question is whether it's any good at making predictions. Let's get some out of sample data. Note that we're taking out of sample data as coming from a range of _extrapolated_ values. Why? Because that's typically what actuaries do. We don't often interpolate.
+
+```{r }
+xNew <- 101:110
+eNew <- rnorm(length(xNew), mean=0, sd=xNew)
+yNew <- b0 + b1*xNew + eNew
+```
+
+```{r }
+predictNew <- function(fit, x){
+  y <- fit$coefficients[1] + fit$coefficients[2]*x
+  y
+}
+
+y1 <- predictNew(fit1, xNew)
+y2 <- predictNew(fit2, xNew)
+
+plot(xNew, yNew, col="black", pch=20)
+points(xNew, y1, col="green", pch=20)
+points(xNew, y2, col="orange", pch=20)
+
+SSE1 <- sum((yNew - y1)^2)
+SSE2 <- sum((yNew - y2)^2)
+
+SAE1 <- sum(abs(yNew - y1))
+SAE2 <- sum(abs(yNew - y2))
+```
+
+So, our heteroskedastic model performs better! But only just. And, it even performs just a shade worse when we look at the sum of _absolute_ rather than squared errors.
+
+## Variance depends on X
+## Other parameters have a subscript

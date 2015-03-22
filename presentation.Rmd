@@ -1,0 +1,11 @@
+---
+output: slidy_presentation
+---
+
+## What is heteroskedasticity?
+
+## Why bother?
+
+## Simple model
+
+## 
